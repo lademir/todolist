@@ -40,7 +40,7 @@ export default function TaskCard({ task }: TaskCardProps) {
 
     return (
         <div className="p-3 flex justify-between">
-            <p className={`${completed ? 'line-through text-opacity-80' : ''}`}>
+            <p className={`${completed ? 'line-through text-gray-400' : ''}`}>
                 {task.name}
             </p>
             <div className="flex items-center gap-x-5">
