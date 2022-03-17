@@ -13,7 +13,7 @@ export default function Layout(props: LayoutProps) {
             </Head>
             <div className="
             h-screen w-screen flex flex-col justify-center items-center
-            bg-gradient-to-tr from-green-100 to-green-400
+            bg-gradient-to-tr from-green-100 to-green-500
             ">
                 {props.children}
             </div>
