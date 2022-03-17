@@ -1,3 +1,5 @@
+import { v4 } from 'uuid';
+
 export default class TaskModel {
     #id: string;
     #name: string;
@@ -10,8 +12,15 @@ export default class TaskModel {
         this.#completed = completed;
     }
 
-    static create(id: string, name: string){
+    static create(name: string){
+
+        const id = v4();
+
         return new TaskModel(id, name);
+    }
+
+    static empty() {
+        return TaskModel.create('');
     }
 
     get id() {

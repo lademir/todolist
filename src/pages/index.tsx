@@ -1,8 +1,10 @@
-import { Button, Card, Input } from 'antd'
+import { Button, Card, Input, message } from 'antd'
 import type { GetServerSideProps, NextPage } from 'next'
+import { useState } from 'react'
 
 import Layout from '../components/Layout'
 import TaskCard from '../components/TaskCard'
+import useTasks from '../data/hooks/useTasks'
 import TaskModel from '../models/TaskModel'
 
 interface Props {
@@ -23,21 +25,31 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 const Home: NextPage = () => {
 
-  const tasks: TaskModel[] = [
-    TaskModel.create('1', 'Capoeira'),
-    TaskModel.create('2', 'Estucar Calculo 1'),
-    TaskModel.create('3', 'Estagio'),
-    TaskModel.create('4', 'Aula de Biologia'),
-    TaskModel.create('5', 'Redação da semana'),
-  ]
+
+  const { tasks, addNewTask } = useTasks();
+  const [newTaskName, setNewTaskName] = useState('');
+
+
+  //LOGIC
+  function handleAddNewTask() {
+    if (newTaskName) {
+      addNewTask(newTaskName);
+      setNewTaskName('');
+    } else {
+      message.warning('Sua nova tarefa esta sem nome')
+    }
+
+
+    // (document.querySelector('#username') as HTMLInputElement).value = '';
+  }
 
 
   //JSX
   function addNewTaskCard() {
     return (
       <div className='w-full flex justify-evenly bg-gray-100 py-4 rounded-md gap-x-11'>
-        <Input style={{ width: "50%" }} placeholder='Ler 10 páginas do ...' />
-        <Button>Adicionar</Button>
+        <Input value={newTaskName} onChange={(e) => setNewTaskName(e.target.value)} style={{ width: "50%" }} placeholder='Ler 10 páginas do ...' />
+        <Button onClick={handleAddNewTask}>Adicionar</Button>
       </div>
     )
   }
@@ -45,7 +57,7 @@ const Home: NextPage = () => {
   function taskList() {
     return (
       <div className='flex w-full justify-center h-full'>
-        <div className='bg-gray-100 w-6/12 h-full'>
+        <div className='bg-gray-100 w-8/12 h-full'>
           {tasks.map((task) => {
             return <TaskCard key={task.id} task={task} />
           })}
