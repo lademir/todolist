@@ -7,13 +7,14 @@ module.exports = {
   theme: {
     extend: {},
     colors: {
-      ...colors,
       "primaryColor": "#43e97a",
+      "blue": colors.blue,
       "lightBlue": colors.sky,
-      "warmGray": colors.stone,
-      "trueGray": colors.neutral,
-      "coolGray": colors.gray,
-      "blueGray": colors.slate,
+      "red": colors.red,
+      "black": colors.black,
+      "gray": colors.gray,
+      "lightGray": colors.slate,
+      "green": colors.green
     }
   },
   plugins: [],

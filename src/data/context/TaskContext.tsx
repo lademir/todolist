@@ -1,5 +1,9 @@
 import { createContext, useState } from "react";
 import TaskModel from "../../models/TaskModel";
+import TaskRepository from '../../core/taskRepository'
+import TaskCollection from "../../firebase/taskCollection";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../firebase/clientApp";
 
 
 type TaskContextType = {
@@ -14,13 +18,15 @@ export const TaskContext = createContext<TaskContextType>({} as TaskContextType)
 
 export function TaskProvider({ children }: { children: any }) {
 
+    const repo: TaskRepository = new TaskCollection()
+
     const inMemoryTasks: TaskModel[] = [
         TaskModel.create('Capoeira'),
-        TaskModel.create('Estucar Calculo 1'),
+        TaskModel.create('Estudar Calculo 1'),
         TaskModel.create('Estagio'),
         TaskModel.create('Aula de Biologia'),
         TaskModel.create('Redação da semana'),
-      ]
+    ]
     const [tasks, setTasks] = useState(inMemoryTasks);
 
     //remover task
@@ -28,7 +34,7 @@ export function TaskProvider({ children }: { children: any }) {
         try {
             setTasks(tasks.filter((task) => task.id !== id));
             return true
-        } catch  {
+        } catch {
             return false;
         }
     }
@@ -38,6 +44,8 @@ export function TaskProvider({ children }: { children: any }) {
         const task = TaskModel.create(name);
 
         setTasks([...tasks, task]);
+
+        repo.addNewTask(task);
 
         return task;
     }
