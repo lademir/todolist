@@ -1,8 +1,7 @@
-import { addDoc, collection, QuerySnapshot } from "firebase/firestore";
+import { addDoc, collection, getDocs, QueryDocumentSnapshot, SnapshotOptions } from "firebase/firestore";
 import TaskRepository from "../core/taskRepository";
 import TaskModel from "../models/TaskModel";
 import { db } from "./clientApp";
-
 
 export default class TaskCollection implements TaskRepository {
   #convert = {
@@ -12,25 +11,44 @@ export default class TaskCollection implements TaskRepository {
         completed: task.completed,
       };
     },
+    fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
+      const data = snapshot.data(options);
+      return TaskModel.create(data.name, snapshot.id, data.completed);
+    },
   };
 
-  async addNewTask(task: TaskModel): Promise<boolean> {
+  async addNewTask(task: TaskModel): Promise<any> {
     //   console.log('chegou aqui')
     const taskToFirestore = this.#convert.toFirestore(task);
     console.log(taskToFirestore);
 
     try {
-      const docRef = await addDoc(collection(db, "tasks"), taskToFirestore);
+      const docRef = await addDoc(
+        collection(db, "tasks").withConverter(this.#convert),
+        taskToFirestore
+      );
 
       console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
-    return true;
   }
 
   async getAll(): Promise<TaskModel[]> {
-    return [];
+    let taskSnap: TaskModel[] = [];
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "tasks").withConverter(this.#convert));
+      
+      querySnapshot.forEach((doc) => {
+        taskSnap.push(doc.data());
+      });
+    } catch (error) {
+      console.log("error: ", error);
+      
+    }
+
+    return taskSnap;
   }
 
   async save(task: TaskModel): Promise<TaskModel> {

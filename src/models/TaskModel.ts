@@ -6,21 +6,23 @@ export default class TaskModel {
     #completed: boolean;
 
 
-    private constructor(id: string, name: string, completed = false) {
+    private constructor(name: string, id = '', completed = false) {
         this.#id= id;
         this.#name = name;
         this.#completed = completed;
     }
 
-    static create(name: string){
+    static create(name: string, id: string, completed = false){
 
-        const id = v4();
-
-        return new TaskModel(id, name);
+        return new TaskModel(name, id, completed);
     }
 
+    static createToFirestore(name: string) {
+        return new TaskModel(name)
+    }   
+
     static empty() {
-        return TaskModel.create('');
+        return TaskModel.create('', '');
     }
 
     get id() {

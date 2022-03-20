@@ -1,7 +1,7 @@
 import { Button, Card, Input, message } from 'antd'
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import Layout from '../components/Layout'
 import TaskCard from '../components/TaskCard'
@@ -12,39 +12,26 @@ import TaskModel from '../models/TaskModel'
 interface Props {
   taskSnap: TaskModel[]
 }
-const cityConverter = {
-  toFirestore: (task: TaskModel) => {
-      return {
-          name: task.name,
-          completed: task.completed,
-          };
-  },
-  fromFirestore: (snapshot: any, options: any) => {
-      const data = snapshot.data(options);
-      return TaskModel.create(data.name);
-  }
-};
-
-export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const querySnapshot = await getDocs(collection(db, 'tasks').withConverter(cityConverter));
-
-  let taskSnap: TaskModel[] = [];
-  querySnapshot.forEach((doc) => {
-    taskSnap.push(doc.data().toJson())
-  })
 
 
-  return {
-    props: {
-      taskSnap: taskSnap
-    }
-  }
-}
+// export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
+//   const querySnapshot = await getDocs(collection(db, 'tasks').withConverter(cityConverter));
+
+//   let taskSnap: {id: string, name: string, completed: boolean}[] = [];
+//   querySnapshot.forEach((doc) => {
+//     taskSnap.push(doc.data().toJson())
+//   })
+
+//   return {
+//     props: {
+//       taskSnap: taskSnap
+//     }
+//   }
+// }
 
 
 const Home: NextPage<Props> = ({ taskSnap }) => {
 
-  console.log(taskSnap);
 
   const { tasks, addNewTask } = useTasks();
   const [newTaskName, setNewTaskName] = useState('');
@@ -75,13 +62,15 @@ const Home: NextPage<Props> = ({ taskSnap }) => {
     return (
       <div className='flex w-full justify-center h-full'>
         <div className='bg-gray-100 w-8/12 h-full'>
-          {taskSnap.map((task) => {
+          {tasks.map((task) => {
             return <TaskCard key={task.id} task={task} />
           })}
         </div>
       </div>
     )
   }
+
+  const log = () => tasks.map(task => console.log(task.toJson()));
 
   return (
     <Layout>
@@ -92,6 +81,7 @@ const Home: NextPage<Props> = ({ taskSnap }) => {
           {taskList()}
         </div>
       </Card>
+      <button onClick={log} >Log</button>
     </Layout>
   )
 }

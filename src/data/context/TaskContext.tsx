@@ -1,10 +1,8 @@
-import { createContext, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { createContext, useEffect, useState } from "react";
 import TaskModel from "../../models/TaskModel";
 import TaskRepository from '../../core/taskRepository'
 import TaskCollection from "../../firebase/taskCollection";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../../firebase/clientApp";
-
 
 type TaskContextType = {
     removeTask: (id: string) => Promise<boolean>,
@@ -16,18 +14,20 @@ type TaskContextType = {
 export const TaskContext = createContext<TaskContextType>({} as TaskContextType);
 
 
-export function TaskProvider({ children }: { children: any }) {
+export function TaskProvider({ children }: { children: any}) {
 
     const repo: TaskRepository = new TaskCollection()
 
-    const inMemoryTasks: TaskModel[] = [
-        TaskModel.create('Capoeira'),
-        TaskModel.create('Estudar Calculo 1'),
-        TaskModel.create('Estagio'),
-        TaskModel.create('Aula de Biologia'),
-        TaskModel.create('Redação da semana'),
-    ]
-    const [tasks, setTasks] = useState(inMemoryTasks);
+    const [tasks, setTasks] = useState<TaskModel[]>([]);
+
+    // Load all tasks from firebase
+    useEffect(() => {
+        getAllTasks().then((res) => {
+            setTasks(res);
+        })
+    }, []);
+
+    
 
     //remover task
     async function removeTask(id: string): Promise<boolean> {
@@ -41,13 +41,23 @@ export function TaskProvider({ children }: { children: any }) {
     //adicionar task
     async function addNewTask(name: string): Promise<TaskModel> {
 
-        const task = TaskModel.create(name);
+        const task = TaskModel.createToFirestore(name);
 
         setTasks([...tasks, task]);
 
         repo.addNewTask(task);
 
         return task;
+    }
+
+    async function getAllTasks(): Promise<TaskModel[]> {
+        try {
+            const res = await repo.getAll();
+            return res
+        } catch (error) {
+            console.log("Não foi possível receber os dados", error);   
+            return [];
+        }
     }
 
     return (
