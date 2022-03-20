@@ -7,6 +7,7 @@ import TaskCollection from "../../firebase/taskCollection";
 type TaskContextType = {
     removeTask: (id: string) => Promise<boolean>,
     addNewTask: (name: string) => Promise<TaskModel>,
+    completeTask: (task: TaskModel) => Promise<boolean>
     tasks: TaskModel[]
 }
 
@@ -14,7 +15,7 @@ type TaskContextType = {
 export const TaskContext = createContext<TaskContextType>({} as TaskContextType);
 
 
-export function TaskProvider({ children }: { children: any}) {
+export function TaskProvider({ children }: { children: any }) {
 
     const repo: TaskRepository = new TaskCollection()
 
@@ -27,13 +28,14 @@ export function TaskProvider({ children }: { children: any}) {
         })
     }, []);
 
-    
+
 
     //remover task
     async function removeTask(id: string): Promise<boolean> {
         try {
             setTasks(tasks.filter((task) => task.id !== id));
-            return true
+            const res = await repo.delete(id);
+            return res;
         } catch {
             return false;
         }
@@ -43,11 +45,16 @@ export function TaskProvider({ children }: { children: any}) {
 
         const task = TaskModel.createToFirestore(name);
 
-        setTasks([...tasks, task]);
+        const newTask = await repo.addNewTask(task);
 
-        repo.addNewTask(task);
+        setTasks([...tasks, newTask]);
 
-        return task;
+        return newTask;
+    }
+
+    //completar uma task
+    async function completeTask(task: TaskModel) {
+        return await repo.changeTaskStatus(task);
     }
 
     async function getAllTasks(): Promise<TaskModel[]> {
@@ -55,7 +62,7 @@ export function TaskProvider({ children }: { children: any}) {
             const res = await repo.getAll();
             return res
         } catch (error) {
-            console.log("Não foi possível receber os dados", error);   
+            console.log("Não foi possível receber os dados", error);
             return [];
         }
     }
@@ -64,6 +71,7 @@ export function TaskProvider({ children }: { children: any}) {
         <TaskContext.Provider value={{
             removeTask,
             addNewTask,
+            completeTask,
             tasks
         }}>
             {children}

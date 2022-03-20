@@ -12,7 +12,7 @@ interface TaskCardProps {
 export default function TaskCard({ task }: TaskCardProps) {
 
     const [completed, setCompleted] = useState(task.completed);
-    const { removeTask } = useTasks();
+    const { removeTask, completeTask } = useTasks();
 
 
     //LOGIC
@@ -21,9 +21,10 @@ export default function TaskCard({ task }: TaskCardProps) {
         removeTask(task.id);
     }
 
-    function handleCompleteTask() {
+    async function handleCompleteTask() {
         task.completed = !task.completed;
         setCompleted(task.completed);
+        await completeTask(task);
     }
 
     //JSX
@@ -44,7 +45,7 @@ export default function TaskCard({ task }: TaskCardProps) {
                 {task.name}
             </p>
             <div className="flex items-center gap-x-5">
-                <Checkbox onChange={handleCompleteTask} />
+                <Checkbox defaultChecked={task.completed} onChange={handleCompleteTask} />
                 {deleteButton()}
             </div>
         </div>

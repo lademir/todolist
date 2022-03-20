@@ -62,7 +62,7 @@ const Home: NextPage<Props> = ({ taskSnap }) => {
     return (
       <div className='flex w-full justify-center h-full'>
         <div className='bg-gray-100 w-8/12 h-full'>
-          {tasks.map((task) => {
+          {tasks?.map((task) => {
             return <TaskCard key={task.id} task={task} />
           })}
         </div>

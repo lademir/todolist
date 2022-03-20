@@ -9,6 +9,8 @@ export default interface TaskRepository {
 
     getAll(): Promise<TaskModel[]>,
 
-    addNewTask(task: TaskModel): Promise<TaskModel>
+    addNewTask(task: TaskModel): Promise<TaskModel>,
+
+    changeTaskStatus(task: TaskModel): Promise<boolean>
 
 }
