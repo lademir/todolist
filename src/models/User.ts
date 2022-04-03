@@ -1,8 +1,8 @@
 export default interface User {
     uid: string,
     email: string,
-    nome: string,
+    name: string,
     token: string,
-    provedor: string,
-    imagemURL: string
+    provider: string,
+    imageURL: string
 }

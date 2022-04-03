@@ -2,7 +2,7 @@
 import { createContext, useEffect, useState } from "react";
 import TaskModel from "../../models/TaskModel";
 import TaskRepository from '../../core/taskRepository'
-import TaskCollection from "../../firebase/taskCollection";
+import TaskCollection from "../../services/taskCollection";
 
 type TaskContextType = {
     removeTask: (id: string) => Promise<boolean>,

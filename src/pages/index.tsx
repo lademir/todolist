@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import TaskCard from '../components/TaskCard'
 import useTasks from '../data/hooks/useTasks'
-import { db } from '../firebase/clientApp'
+import { db } from '../services/clientApp'
 import TaskModel from '../models/TaskModel'
 
 interface Props {

@@ -1,7 +1,8 @@
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
+import { PlusOutlined, DeleteOutlined, GoogleOutlined } from '@ant-design/icons'
 
 export const Icons = {
     plus: <PlusOutlined />,
-    delete: <DeleteOutlined />
+    delete: <DeleteOutlined />,
+    google: <GoogleOutlined />
 }
 
